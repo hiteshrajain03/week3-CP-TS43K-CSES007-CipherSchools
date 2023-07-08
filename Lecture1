@@ -1,0 +1,21 @@
+Q1 (Coin Change) ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+int solve(int amt,vector<int> &coins){
+    if(amt==0) return 0;
+    int ans = 1e4;
+    for(auto i:coins){
+        if(amt>=i)
+            ans = min(ans,solve(amt-i,coins)+1);
+    }
+    return ans;
+}
+int coinChange(vector<int>& coins, int amount) {
+    int ans = solve(amount,coins);
+    if(ans>=1e4){
+        ans = -1;
+    }
+    return ans;
+}
+
+
+
