@@ -1,0 +1,105 @@
+Q1 (LCS) /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Solution {
+public:
+    bool ispalindrome(string str){
+        int left=0;
+        int right= str.size()-1;
+        while(left<right){
+            if(str[left]!=str[right]) return false;
+            left++;
+            right--;
+        }
+        return true;
+    }
+    
+    string longestPalindrome(string s) {
+        string res="";
+        int ans=0;
+        int n= s.size();
+        for(int i=0; i<n; i++){
+            string curr="";
+            for(int j=i; j<n; j++){
+                curr+=s[j];
+                if(ispalindrome(curr)){
+                    int len= j-i+1;
+                    if(len>ans){
+                        ans= len;
+                        res=curr;
+                        
+                    }
+                }
+                
+            }
+        }
+        return res;
+        
+    }
+};
+
+Q2 (Lowest Common Subsequence) ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    string shortestCommonSupersequence(string& A, string& B) {
+        int i = 0, j = 0;
+        string res = "";
+        for (char c : lcs(A, B)) {
+            while (A[i] != c)
+                res += A[i++];
+            while (B[j] != c)
+                res += B[j++];
+            res += c, i++, j++;
+        }
+        return res + A.substr(i) + B.substr(j);
+    }
+
+    string lcs(string& A, string& B) {
+        int n = A.size(), m = B.size();
+        vector<vector<string>> dp(n + 1, vector<string>(m + 1, ""));
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < m; ++j)
+                if (A[i] == B[j])
+                    dp[i + 1][j + 1] = dp[i][j] + A[i];
+                else
+                    dp[i + 1][j + 1] = dp[i + 1][j].size() > dp[i][j + 1].size() ?  dp[i + 1][j] : dp[i][j + 1];
+        return dp[n][m];
+    }
+
+Q3 (LIPL) ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Solution {
+public:
+    int longestIncreasingPath(vector<vector<int>>& matrix, int res = 0) {
+        vector<pair<int, int>> dirs = {{0, 1}, {0,-1}, {1, 0}, {-1, 0}};
+        auto is_valid  = [&](int i, int j) {
+            if (i < 0 || i == matrix.size()) return false;
+            if (j < 0 || j == matrix[0].size()) return false;
+            return true;
+        };
+        
+        unordered_map<string, int> cache;
+        auto gen_key = [](int i, int j) { return to_string(i) + "-" + to_string(j); };
+        
+        function<int(int, int)> go = [&](auto i, auto j) {
+            auto key = gen_key(i, j);
+            if (cache.count(key)) return cache[key];
+			
+            int local = 1;
+            for (auto dir: dirs) {
+                vector<int> to = {i + dir.first, j + dir.second};
+                if (is_valid(to[0], to[1]))
+                    if (matrix[i][j] < matrix[to[0]][to[1]])
+                        local = max(local, 1 + go(to[0], to[1]));
+            }
+            return cache[key] = local;
+        };
+        
+        for (int i = 0; i < matrix.size(); i++)
+            for (int j = 0; j < matrix[i].size(); j++) 
+                res = max(res, go(i, j));
+        return res;
+    }
+};
+
+
+
+
